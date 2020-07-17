@@ -1,0 +1,19 @@
+name: arch
+description: Common architecture components for Flutter project, created for internal use.
+version: 0.0.1
+author: Nikita Ivanov
+homepage: https://github.com/scrinoman
+
+environment:
+  sdk: ">=2.7.0 <3.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  rxdart: ^0.24.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+flutter:
