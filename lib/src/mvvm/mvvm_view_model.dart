@@ -39,6 +39,11 @@ abstract class ViewModel {
   }
 
   @protected
+  void notifyErrorMessage(String message) {
+    _errorMessagesSubject.add(message);
+  }
+
+  @protected
   void handleThrows(Object thrownObject) {
     if (thrownObject is Error) {
       _errorMessagesSubject.add(thrownObject.toString());
