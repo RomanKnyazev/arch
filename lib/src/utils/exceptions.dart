@@ -10,7 +10,7 @@ class NoInternetException extends AppException {
   const NoInternetException() : super(message: 'No Internet connection');
 }
 
-abstract class RemoteException extends AppException {
+class RemoteException extends AppException {
   final int code;
   final String url;
 

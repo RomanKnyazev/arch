@@ -1,6 +1,6 @@
 name: arch
 description: Common architecture components for Flutter project, created for internal use.
-version: 0.0.2
+version: 0.0.3
 author: Nikita Ivanov
 homepage: https://github.com/scrinoman
 

@@ -27,6 +27,18 @@ class _ExamplePageState extends MvvmState<ExampleViewModel, ExamplePage> {
             Text(
               'You have pushed the button this many times:',
             ),
+            SizedBox(
+              height: 64,
+              child: StreamBuilder<bool>(
+                stream: viewModel.activityIndicatorStream,
+                builder: (context, snapshot) {
+                  if (!snapshot.hasData || !snapshot.data) {
+                    return Container();
+                  }
+                  return Center(child: PlatformProgressIndicator());
+                }
+              ),
+            ),
             StreamBuilder<int>(
               stream: viewModel.counterStream,
               builder: (ctx, snapshot) {
@@ -43,7 +55,7 @@ class _ExamplePageState extends MvvmState<ExampleViewModel, ExamplePage> {
         onPressed: viewModel.onAddPressed,
         tooltip: 'Increment',
         child: Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+      ),
     );
   }
 }
