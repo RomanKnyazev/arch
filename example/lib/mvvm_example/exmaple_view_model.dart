@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:arch/arch.dart';
@@ -29,5 +30,29 @@ class ExampleViewModel extends ViewModel {
       }
       _counterSubject.add(value);
     }, notifyProgress: true);
+  }
+
+  void onFirstBuild() {
+    Future(() {
+      notifyHaveBlockingProgress(true);
+      notifyHaveBlockingProgress(true);
+      notifyHaveBlockingProgress(true);
+      notifyHaveBlockingProgress(true);
+      Timer(Duration(seconds: 30), () {
+        notifyHaveBlockingProgress(false);
+        notifyHaveBlockingProgress(false);
+        notifyHaveBlockingProgress(false);
+        notifyHaveBlockingProgress(false);
+        notifyHaveBlockingProgress(false);
+        notifyHaveBlockingProgress(false);
+        notifyHaveBlockingProgress(false);
+        notifyHaveBlockingProgress(false);
+        notifyHaveBlockingProgress(false);
+        notifyHaveBlockingProgress(false);
+        notifyHaveBlockingProgress(false);
+        notifyHaveBlockingProgress(false);
+        notifyHaveBlockingProgress(false);
+      });
+    });
   }
 }
