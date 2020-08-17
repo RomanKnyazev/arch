@@ -79,10 +79,14 @@ abstract class ViewModel {
   Future<void> launchHandled<T>(
     FutureOr<T> perform(), {
     bool notifyProgress = false,
+    bool notifyBlockingProgress = false,
   }) {
     return Future(() async {
       if (notifyProgress) {
         notifyHaveProgress(true);
+      }
+      if (notifyBlockingProgress) {
+        notifyHaveBlockingProgress(true);
       }
       try {
         await perform();
@@ -92,7 +96,47 @@ abstract class ViewModel {
         if (notifyProgress) {
           notifyHaveProgress(false);
         }
+        if (notifyBlockingProgress) {
+          notifyHaveBlockingProgress(false);
+        }
       }
     });
+  }
+
+  void listenHandled<T>(
+    Stream<T> stream,
+    void onData(T event), {
+    bool notifyProgress = false,
+    bool notifyBlockingProgress = false,
+    bool cancelOnError = false,
+  }) {
+    stream.doOnListen(() {
+      if (notifyProgress) {
+        notifyHaveProgress(true);
+      }
+      if (notifyBlockingProgress) {
+        notifyHaveBlockingProgress(true);
+      }
+    }).listen(
+      (event) {
+        onData.call(event);
+        if (notifyProgress) {
+          notifyHaveProgress(false);
+        }
+        if (notifyBlockingProgress) {
+          notifyHaveBlockingProgress(false);
+        }
+      },
+      onError: (t) {
+        handleThrows(t);
+        if (notifyProgress) {
+          notifyHaveProgress(false);
+        }
+        if (notifyBlockingProgress) {
+          notifyHaveBlockingProgress(false);
+        }
+      },
+      cancelOnError: cancelOnError,
+    ).disposeWith(disposeBag);
   }
 }
