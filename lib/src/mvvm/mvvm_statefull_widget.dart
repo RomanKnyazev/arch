@@ -1,8 +1,10 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:arch/src/mvvm/mvvm_view_model.dart';
 import 'package:arch/src/utils/error_listener.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart' as cupertino;
 import 'package:flutter/widgets.dart';
 
 typedef ViewModelBuilder = ViewModel Function(BuildContext);
@@ -21,6 +23,8 @@ abstract class MvvmStatefulWidget extends StatefulWidget {
 
 abstract class MvvmState<VM extends ViewModel, W extends MvvmStatefulWidget>
     extends State<W> {
+  int _blockingLoaderCounter = 0;
+
   @protected
   VM viewModel;
 
@@ -45,12 +49,82 @@ abstract class MvvmState<VM extends ViewModel, W extends MvvmStatefulWidget>
   Widget build(BuildContext context) {
     return StreamListenerWidget(
       stream: viewModel.errorMessagesStream,
-      listener: (ctx, message) => defaultErrorListener.handleErrorMessage(ctx, message),
-      child: buildWidget(context),
+      listener: (ctx, message) =>
+          defaultErrorListener.handleErrorMessage(ctx, message),
+      child: StreamListenerWidget(
+        stream: viewModel.needToShowBlockingLoadingStream,
+        listener: (context, needToShowBlockingLoading) {
+          if (needToShowBlockingLoading) {
+            _showBlockingProgress(context);
+          } else {
+            _hideBlockingProgress(context);
+          }
+        },
+        child: buildWidget(context),
+      ),
     );
   }
 
   Widget buildWidget(BuildContext context);
+
+  void _hideBlockingProgress(BuildContext context) {
+    if (_blockingLoaderCounter > 0) {
+      _blockingLoaderCounter--;
+      if (_blockingLoaderCounter == 0) {
+        Navigator.of(context, rootNavigator: false).pop();
+      }
+    }
+  }
+
+  void _showBlockingProgress(BuildContext context) {
+    _blockingLoaderCounter++;
+    if (_blockingLoaderCounter > 1) {
+      return;
+    }
+    if (Platform.isIOS) {
+      cupertino.showCupertinoDialog(
+        context: context,
+        barrierDismissible: false,
+        useRootNavigator: false,
+        builder: (context) {
+          return cupertino.WillPopScope(
+            onWillPop: () async => false,
+            child: cupertino.Center(
+              child: cupertino.Container(
+                width: 128,
+                height: 128,
+                child: cupertino.CupertinoPopupSurface(
+                  isSurfacePainted: true,
+                  child: cupertino.Center(
+                    child: cupertino.CupertinoActivityIndicator(
+                      radius: 37,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          );
+        },
+      );
+    } else {
+      showDialog(
+        context: context,
+        useRootNavigator: false,
+        builder: (ctx) {
+          return WillPopScope(
+            onWillPop: () async => false,
+            child: SimpleDialog(
+              children: <Widget>[
+                Center(
+                  child: CircularProgressIndicator(),
+                ),
+              ],
+            ),
+          );
+        },
+      );
+    }
+  }
 }
 
 class StreamListenerWidget<T> extends StatefulWidget {

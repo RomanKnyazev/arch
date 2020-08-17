@@ -14,8 +14,13 @@ class ExamplePage extends MvvmStatefulWidget {
 }
 
 class _ExamplePageState extends MvvmState<ExampleViewModel, ExamplePage> {
+  bool _isFirstBuildPassed = false;
   @override
   Widget buildWidget(BuildContext context) {
+    if (!_isFirstBuildPassed) {
+      viewModel.onFirstBuild();
+      _isFirstBuildPassed = true;
+    }
     return Scaffold(
       appBar: AppBar(
         title: const Text('Example'),

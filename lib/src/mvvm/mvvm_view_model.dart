@@ -13,15 +13,26 @@ abstract class ViewModel {
 
   final PublishSubject<String> _errorMessagesSubject = PublishSubject();
 
+  final Subject<bool> _needToShowBlockingLoadingSubject =
+      BehaviorSubject.seeded(false);
+
   @protected
   final NavigatorState navigator;
 
   ViewModel(BuildContext ctx) : navigator = Navigator.of(ctx);
 
+  Stream<bool> get activityIndicatorStream => _activityIndicatorSubject.stream;
+
+  Stream<bool> get needToShowBlockingLoadingStream =>
+      _needToShowBlockingLoadingSubject.stream;
+
+  Stream<String> get errorMessagesStream => _errorMessagesSubject.stream;
+
   @mustCallSuper
   void onInit() {
     _activityIndicatorSubject.disposeWith(disposeBag);
     _errorMessagesSubject.disposeWith(disposeBag);
+    _needToShowBlockingLoadingSubject.disposeWith(disposeBag);
   }
 
   @mustCallSuper
@@ -29,13 +40,14 @@ abstract class ViewModel {
     disposeBag.dispose();
   }
 
-  Stream<bool> get activityIndicatorStream => _activityIndicatorSubject.stream;
-
-  Stream<String> get errorMessagesStream => _errorMessagesSubject.stream;
-
   @protected
   void notifyHaveProgress(bool haveProgress) {
     _activityIndicatorSubject.add(haveProgress);
+  }
+
+  @protected
+  void notifyHaveBlockingProgress(bool haveProgress) {
+    _needToShowBlockingLoadingSubject.add(haveProgress);
   }
 
   @protected
