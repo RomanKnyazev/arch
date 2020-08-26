@@ -29,7 +29,7 @@ class ExampleViewModel extends ViewModel {
         throw AppException(message: 'values % 5 == 0');
       }
       _counterSubject.add(value);
-    }, notifyProgress: true);
+    }, notifyBlockingProgress: true);
   }
 
   void onFirstBuild() {
@@ -38,7 +38,7 @@ class ExampleViewModel extends ViewModel {
       notifyHaveBlockingProgress(true);
       notifyHaveBlockingProgress(true);
       notifyHaveBlockingProgress(true);
-      Timer(Duration(seconds: 30), () {
+      Timer(Duration(seconds: 5), () {
         notifyHaveBlockingProgress(false);
         notifyHaveBlockingProgress(false);
         notifyHaveBlockingProgress(false);

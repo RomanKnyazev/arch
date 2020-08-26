@@ -49,8 +49,10 @@ abstract class MvvmState<VM extends ViewModel, W extends MvvmStatefulWidget>
   Widget build(BuildContext context) {
     return StreamListenerWidget(
       stream: viewModel.errorMessagesStream,
-      listener: (ctx, message) =>
-          defaultErrorListener.handleErrorMessage(ctx, message),
+      listener: (ctx, message) {
+        _hideBlockingProgress(context, force: true);
+        defaultErrorListener.handleErrorMessage(ctx, message);
+      },
       child: StreamListenerWidget(
         stream: viewModel.needToShowBlockingLoadingStream,
         listener: (context, needToShowBlockingLoading) {
@@ -67,7 +69,13 @@ abstract class MvvmState<VM extends ViewModel, W extends MvvmStatefulWidget>
 
   Widget buildWidget(BuildContext context);
 
-  void _hideBlockingProgress(BuildContext context) {
+  void _hideBlockingProgress(
+    BuildContext context, {
+    bool force = false,
+  }) {
+    if (force && _blockingLoaderCounter > 0) {
+      _blockingLoaderCounter = 1;
+    }
     if (_blockingLoaderCounter > 0) {
       _blockingLoaderCounter--;
       if (_blockingLoaderCounter == 0) {
@@ -114,9 +122,14 @@ abstract class MvvmState<VM extends ViewModel, W extends MvvmStatefulWidget>
           return WillPopScope(
             onWillPop: () async => false,
             child: SimpleDialog(
-              children: <Widget>[
-                Center(
-                  child: CircularProgressIndicator(),
+              contentPadding: const EdgeInsets.all(0),
+              children: [
+                SizedBox(
+                  width: 100,
+                  height: 100,
+                  child: Center(
+                    child: CircularProgressIndicator(),
+                  ),
                 ),
               ],
             ),
