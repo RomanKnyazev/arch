@@ -9,5 +9,9 @@ Add these lines to your **pubspec.yaml**
   arch:
     git:
       url: https://github.com/scrinoman/arch.git
-      ref: v0.0.5
+      ref: v0.0.8
 ```
+
+## TODO
+
+Add "How to use" to README
