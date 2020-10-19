@@ -105,7 +105,7 @@ abstract class ViewModel {
 
   void listenHandled<T>(
     Stream<T> stream,
-    void onData(T event), {
+    FutureOr<void> onData(T event), {
     bool notifyProgress = false,
     bool notifyBlockingProgress = false,
     bool cancelOnError = false,
@@ -119,13 +119,15 @@ abstract class ViewModel {
       }
     }).listen(
       (event) {
-        onData.call(event);
-        if (notifyProgress) {
-          notifyHaveProgress(false);
-        }
-        if (notifyBlockingProgress) {
-          notifyHaveBlockingProgress(false);
-        }
+        launchHandled(() async {
+          await onData.call(event);
+          if (notifyProgress) {
+            notifyHaveProgress(false);
+          }
+          if (notifyBlockingProgress) {
+            notifyHaveBlockingProgress(false);
+          }
+        });
       },
       onError: (t) {
         handleThrows(t);
