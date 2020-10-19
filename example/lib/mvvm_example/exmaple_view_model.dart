@@ -33,26 +33,20 @@ class ExampleViewModel extends ViewModel {
   }
 
   void onFirstBuild() {
-    Future(() {
-      notifyHaveBlockingProgress(true);
-      notifyHaveBlockingProgress(true);
-      notifyHaveBlockingProgress(true);
-      notifyHaveBlockingProgress(true);
-      Timer(Duration(seconds: 5), () {
-        notifyHaveBlockingProgress(false);
-        notifyHaveBlockingProgress(false);
-        notifyHaveBlockingProgress(false);
-        notifyHaveBlockingProgress(false);
-        notifyHaveBlockingProgress(false);
-        notifyHaveBlockingProgress(false);
-        notifyHaveBlockingProgress(false);
-        notifyHaveBlockingProgress(false);
-        notifyHaveBlockingProgress(false);
-        notifyHaveBlockingProgress(false);
-        notifyHaveBlockingProgress(false);
-        notifyHaveBlockingProgress(false);
-        notifyHaveBlockingProgress(false);
-      });
+    listenHandled(_generateSequence(), _onData, notifyBlockingProgress: true);
+  }
+
+  Future<void> _onData(int event) {
+    print('Data event received $event');
+    return Future.delayed(Duration(seconds: 2), () {
+      print('Data $event proceed');
     });
+  }
+
+  Stream<int> _generateSequence() async* {
+    for (var i = 0; i < 1000; i++) {
+      await Future.delayed(Duration(seconds: 10));
+      yield i;
+    }
   }
 }
